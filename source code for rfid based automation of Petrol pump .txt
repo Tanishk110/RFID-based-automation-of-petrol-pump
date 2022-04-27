@@ -1,0 +1,312 @@
+Coding of the RFID Based Automation of Petrol Pump
+CODES
+int digit1 = 10; //PWM Display pin 1 
+int digit2 = 11; //PWM Display pin 2 
+int digit3 = 12; //PWM Display pin 6 
+int digit4 = 13; //PWM Display pin 8 
+int segA = 2; //Display pin 14 
+int segB = 3; //Display pin 16 
+int segC = 4; //Display pin 13 
+int segD = 5; //Display pin 3 
+int segE = 6; //Display pin 5 
+int segF = 7; //Display pin 11 
+int segG = 8; //Display pin 15 
+int interval=1000; 
+// Tracks the time since last event fired 
+unsigned long previousMillis=0; 
+unsigned long currentMillis =1000; 
+unsigned long currentMillis1 =0; 
+unsigned long currentMillis2 =0; 
+unsigned long currentMillis3 =0; 
+unsigned long currentMillis4 =0; 
+int buttonPushCounter1 = 1; 
+int buttonPushCounter = 1; 
+int buttonState = 1; 
+int lastButtonState = 1; 
+int buttonState1 = 1; 
+int lastButtonState1 = 1; 
+int buttonState2 = 1; 
+int lastButtonState2 = 1; 
+int Relay1=A4; 
+int Relay2=A3; 
+int Button=A5; 
+const int buttonPin = A0;
+ const int buttonPin1 = A1; 
+const int buttonPin2 = A2; 
+int b=HIGH; 
+int a=1; 
+int k=1; 
+int start_num=0; // Number to countdown from unsigned long time; 
+void setup() 
+{ 
+pinMode(segA, OUTPUT); 
+pinMode(segB, OUTPUT);
+pinMode(segC, OUTPUT); 
+pinMode(segD, OUTPUT); 
+pinMode(segE, OUTPUT); 
+pinMode(segF, OUTPUT);
+pinMode(segG, OUTPUT); 
+pinMode(digit1, OUTPUT); 
+pinMode(digit2, OUTPUT); 
+pinMode(digit3, OUTPUT); 
+pinMode(digit4, OUTPUT); 
+pinMode(Relay1, OUTPUT); 
+pinMode(Relay2, OUTPUT); 
+pinMode(Button, INPUT); 
+pinMode(buttonPin, INPUT); 
+pinMode(buttonPin1, INPUT); 
+pinMode(buttonPin2, INPUT); 
+pinMode(9, OUTPUT); 
+} 
+void loop() 
+{ 
+b = digitalRead(Button); 
+if (b == HIGH) 
+{ buttonState = digitalRead(buttonPin); 
+if (buttonState != lastButtonState) 
+{ 
+if (buttonState == LOW) 
+{ 
+if (buttonPushCounter1 >= 1) 
+{ 
+buttonPushCounter1++; 
+}
+} 
+} 
+lastButtonState = buttonState; 
+digitalWrite(Relay2, LOW); 
+if(buttonPushCounter1 % 2 == 0) 
+{ 
+if(k == 1) 
+{ 
+buttonState2 = digitalRead(buttonPin1); 
+if (buttonState2 != lastButtonState2 ) 
+{ 
+buttonPushCounter = 0; k=2; 
+} 
+Else
+{ 
+displayNumber(start_num-start_num); 
+digitalWrite(Relay1, LOW); 
+currentMillis = millis(); 
+currentMillis3 = (currentMillis2); 
+} 
+} 
+else 
+{ 
+digitalWrite(Relay1, LOW); 
+currentMillis3 = (currentMillis2); 
+displayNumber(currentMillis2); 
+buttonState1 = digitalRead(buttonPin2); 
+if (buttonState1 != lastButtonState1) 
+{ 
+if (buttonState1 == LOW) 
+{ 
+if (buttonPushCounter >= 1) 
+{ 
+buttonPushCounter--; 
+start_num = buttonPushCounter*1; 
+currentMillis2 = start_num; 
+buttonPushCounter1 = 2; 
+} 
+}
+} 
+lastButtonState1 = buttonState1; 
+buttonState2 = digitalRead(buttonPin1); 
+if (buttonState2 != lastButtonState2) 
+{ 
+if (buttonState2 == LOW) 
+{ 
+if (buttonPushCounter <= 29) 
+{ 
+buttonPushCounter++; 
+start_num = buttonPushCounter*1; 
+currentMillis2 = start_num; 
+buttonPushCounter1 = 2; 
+} 
+} 
+} 
+lastButtonState2 = buttonState2; 
+currentMillis = millis(); 
+} 
+}
+else 
+{ 
+previousMillis = millis() - currentMillis; 
+if((previousMillis/1000) < currentMillis3) 
+{ 
+displayNumber(currentMillis3 - (previousMillis/1000)); 
+currentMillis1= (currentMillis3 - (previousMillis/1000)); 
+currentMillis2 = currentMillis1; 
+digitalWrite(Relay1, HIGH); 
+k=2; 
+} 
+else 
+{
+ // reached zero, flash the display time=millis(); 
+while(millis() < time+200) 
+{ 
+displayNumber(start_num-start_num); 
+digitalWrite(Relay1, LOW);
+currentMillis2 =buttonPushCounter*60; 
+buttonPushCounter1 = 10; 
+} 
+k=1; 
+} 
+} 
+}
+else 
+{ 
+if(buttonPushCounter1 == 10) 
+{ 
+displayNumber(start_num-start_num); 
+digitalWrite(Relay2, HIGH); 
+currentMillis = millis(); 
+digitalWrite(Relay1, LOW); 
+buttonPushCounter1 = 10; 
+} 
+else 
+{ 
+displayNumber(currentMillis2); 
+digitalWrite(Relay2, HIGH); 
+currentMillis = millis(); 
+digitalWrite(Relay1, LOW); 
+buttonPushCounter1 = 4; 
+} 
+} 
+void displayNumber(int toDisplay) 
+{ 
+#define DISPLAY_BRIGHTNESS 4000 
+#define DIGIT_ON HIGH #define DIGIT_OFF LOW long beginTime = millis(); 
+for(int digit = 4 ; digit > 0 ; digit--) 
+{ 
+//Turn on a digit for a short amount of time switch(digit) 
+{ 
+case 1: digitalWrite(digit1, DIGIT_ON); 
+break; 
+case 2: digitalWrite(digit2, DIGIT_ON); 
+break; 
+case 3: digitalWrite(digit3, DIGIT_ON); 
+break; 
+case 4: digitalWrite(digit4, DIGIT_ON); 
+break; 
+} 
+//Turn on the right segments for this digit lightNumber(toDisplay % 10); 
+toDisplay /= 10; 
+delayMicroseconds(DISPLAY_BRIGHTNESS); 
+//Display digit for fraction of a second (1us to 5000us, 500 is pretty good) 
+//Turn off all segments lightNumber(10); 
+//Turn off all digits digitalWrite(digit1, DIGIT_OFF); 
+digitalWrite(digit2, DIGIT_OFF); 
+digitalWrite(digit3, DIGIT_OFF); 
+digitalWrite(digit4, DIGIT_OFF); 
+} 
+while( (millis() - beginTime) < 10) ; 
+//Wait for 20ms to pass before we paint the display again 
+} 
+//Given a number, turns on those segments 
+//If number == 10, then turn off number void lightNumber(int numberToDisplay) 
+{ 
+#define SEGMENT_ON LOW 
+#define SEGMENT_OFF HIGH switch (numberToDisplay)
+{
+case 0: digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_OFF); 
+digitalWrite(segE, SEGMENT_OFF); 
+digitalWrite(segF, SEGMENT_OFF); 
+digitalWrite(segG, SEGMENT_ON); 
+break; 
+case 1: 
+digitalWrite(segA, SEGMENT_ON); 
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_ON); 
+digitalWrite(segE, SEGMENT_ON); 
+digitalWrite(segF, SEGMENT_ON); 
+digitalWrite(segG, SEGMENT_ON); 
+break; 
+case 2: 
+digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_ON); 
+digitalWrite(segD, SEGMENT_OFF); 
+digitalWrite(segE, SEGMENT_OFF); 
+digitalWrite(segF, SEGMENT_ON); 
+digitalWrite(segG, SEGMENT_OFF); 
+break; 
+case 3: 
+digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_OFF); 
+digitalWrite(segE, SEGMENT_ON); 
+digitalWrite(segF, SEGMENT_ON); 
+digitalWrite(segG, SEGMENT_OFF); 
+break; 
+case 4: 
+digitalWrite(segA, SEGMENT_ON);
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_ON); 
+digitalWrite(segE, SEGMENT_ON); 
+digitalWrite(segF, SEGMENT_OFF); 
+digitalWrite(segG, SEGMENT_OFF); 
+break; 
+case 5: 
+digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_ON); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_OFF);
+digitalWrite(segE, SEGMENT_ON); 
+digitalWrite(segF, SEGMENT_OFF); 
+digitalWrite(segG, SEGMENT_OFF); 
+break; 
+case 6: 
+digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_ON); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_OFF); 
+digitalWrite(segE, SEGMENT_OFF); 
+digitalWrite(segF, SEGMENT_OFF); 
+digitalWrite(segG, SEGMENT_OFF); 
+break; 
+case 7: 
+digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_ON); 
+digitalWrite(segE, SEGMENT_ON); 
+digitalWrite(segF, SEGMENT_ON); 
+digitalWrite(segG, SEGMENT_ON); 
+break; 
+case 8: 
+digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_OFF); 
+digitalWrite(segE, SEGMENT_OFF); 
+digitalWrite(segF, SEGMENT_OFF); 
+digitalWrite(segG, SEGMENT_OFF); 
+break; 
+case 9: 
+digitalWrite(segA, SEGMENT_OFF); 
+digitalWrite(segB, SEGMENT_OFF); 
+digitalWrite(segC, SEGMENT_OFF); 
+digitalWrite(segD, SEGMENT_OFF); 
+digitalWrite(segE, SEGMENT_ON); 
+digitalWrite(segF, SEGMENT_OFF); 
+digitalWrite(segG, SEGMENT_OFF); 
+break; 
+// all segment are ON
+ case 10: 
+digitalWrite(segA, SEGMENT_ON); 
+digitalWrite(segB, SEGMENT_ON); 
+digitalWrite(segC, SEGMENT_ON); 
+digitalWrite(segD, SEGMENT_ON); 
+digitalWrite(segE, SEGMENT_ON); 
+digitalWrite(segF, SEGMENT_ON); 
+digitalWrite(segG, SEGMENT_ON); 
+break; 
+}
